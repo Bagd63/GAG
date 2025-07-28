@@ -1,0 +1,127 @@
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "LoadingScreen"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = playerGui
+
+-- Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(1, 0, 1, 0)
+frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+frame.Parent = screenGui
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0.2, 0)
+title.Position = UDim2.new(0, 0, 0.25, 0)
+title.Text = "Wait for it"
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1
+title.Parent = frame
+
+-- Progress Bar Background
+local progressBarBg = Instance.new("Frame")
+progressBarBg.Size = UDim2.new(0.6, 0, 0.05, 0)
+progressBarBg.Position = UDim2.new(0.2, 0, 0.6, 0)
+progressBarBg.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+progressBarBg.BorderSizePixel = 0
+progressBarBg.Parent = frame
+
+-- Progress Bar Fill
+local progressBarFill = Instance.new("Frame")
+progressBarFill.Size = UDim2.new(0, 0, 1, 0)
+progressBarFill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+progressBarFill.BorderSizePixel = 0
+progressBarFill.Parent = progressBarBg
+
+-- Percentage Label
+local percentageLabel = Instance.new("TextLabel")
+percentageLabel.Size = UDim2.new(1, 0, 1, 0)
+percentageLabel.Position = UDim2.new(0, 0, 0, 0)
+percentageLabel.Text = "0%"
+percentageLabel.TextScaled = true
+percentageLabel.Font = Enum.Font.Gotham
+percentageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+percentageLabel.BackgroundTransparency = 1
+percentageLabel.Parent = progressBarBg
+
+-- Loading Message
+local messageLabel = Instance.new("TextLabel")
+messageLabel.Size = UDim2.new(1, 0, 0.1, 0)
+messageLabel.Position = UDim2.new(0, 0, 0.7, 0)
+messageLabel.Text = ""
+messageLabel.TextScaled = true
+messageLabel.Font = Enum.Font.Gotham
+messageLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+messageLabel.BackgroundTransparency = 1
+messageLabel.Parent = frame
+
+-- Fake Loading Messages
+local loadingMessages = {
+	"Loading assets...",
+	"Authenticating user...",
+	"Checking for updates...",
+	"Fetching player data...",
+	"Rendering UI...",
+	"Loading environment...",
+	"Calculating stuff...",
+	"Preparing epic experience...",
+	"Loading... trust the process.",
+	"99% complete. Almost there..."
+}
+
+-- Title dots animation
+task.spawn(function()
+	local dots = ""
+	while true do
+		dots = dots == "..." and "" or dots .. "."
+		title.Text = "Wait for it" .. dots
+		wait(0.5)
+	end
+end)
+
+-- Rotate loading messages
+task.spawn(function()
+	local index = 1
+	while true do
+		messageLabel.Text = loadingMessages[index]
+		index = index % #loadingMessages + 1
+		wait(2.5)
+	end
+end)
+
+-- Fake Loading Simulation
+local percent = 0
+
+while percent < 99 do
+	local increment = math.random(1, 2)
+	wait(math.random(8, 15) / 20)  -- Slower loading
+	percent += increment
+	if percent > 99 then percent = 99 end
+	
+	progressBarFill:TweenSize(
+		UDim2.new(percent / 100, 0, 1, 0),
+		Enum.EasingDirection.Out,
+		Enum.EasingStyle.Quad,
+		0.2,
+		true
+	)
+
+	percentageLabel.Text = percent .. "%"
+end
+
+-- Stay stuck at 99%
+percentageLabel.Text = "99%"
+messageLabel.Text = "Finalizing..."
+progressBarFill:TweenSize(UDim2.new(0.99, 0, 1, 0), "Out", "Quad", 0.3, true)
+
+-- Lock screen forever
+while true do
+	wait(1)
+end
